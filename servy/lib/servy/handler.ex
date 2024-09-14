@@ -7,6 +7,7 @@ defmodule Servy.Handler do
   import Servy.Parser, only: [parse: 1]
   import Servy.FileHandler, only: [get_file: 2]
   alias Servy.Conv, as: Conv
+  alias Servy.BearController
 
   @doc """
   Handle the incoming request by parsing it, rewriting the path, routing it, logging it, tracking it, emojifying it, and formatting the response.
@@ -40,7 +41,7 @@ defmodule Servy.Handler do
   end
 
   def route(%Conv{method: "GET", path: "/bears"} = conv) do
-    %{conv | status: 200, resp_body: "Teddy, grizzly, polar"}
+    BearController.index(conv)
   end
 
   def route(%Conv{method: "GET", path: "/bears/new"} = conv) do
@@ -52,19 +53,16 @@ defmodule Servy.Handler do
   end
 
   def route(%Conv{method: "GET", path: "/bears" <> id} = conv) do
-    %{conv | status: 200, resp_body: "Bear #{id}"}
+    params = Map.put(conv.params, "id", id)
+    BearController.show(conv, params)
   end
 
-  def route(%Conv{method: "DELETE", path: "/bears" <> id} = conv) do
-    %{conv | status: 403, resp_body: "Bear #{id} must never be deleted"}
+  def route(%{method: "DELETE", path: "/bears/" <> _id} = conv) do
+    BearController.delete(conv, conv.params)
   end
 
   def route(%Conv{method: "POST", path: "/bears"} = conv) do
-    %{
-      conv
-      | status: 201,
-        resp_body: "Create a #{conv.params["type"]} bear named #{conv.params["name"]}!"
-    }
+    BearController.create(conv, conv.params)
   end
 
   def route(%Conv{path: path} = conv) do
