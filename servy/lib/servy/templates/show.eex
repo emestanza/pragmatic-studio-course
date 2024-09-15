@@ -1,0 +1,2 @@
+<h1>Show bear</h1>
+<h3>Is <%= bear.name %> hibernating? <%= bear.hibernating %></h3>
