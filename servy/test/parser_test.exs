@@ -1,11 +1,10 @@
 defmodule ParserTest do
-
   use ExUnit.Case
   alias Servy.Conv, as: Conv
   alias Servy.Parser
 
   test "parse" do
-    request = "GET /bears HTTP/1.1\nHost: localhost:4000\n\n"
+    request = "GET /bears HTTP/1.1\r\nHost: localhost:4000\r\n\r\n"
     conv = Parser.parse(request)
     assert conv.method == "GET"
     assert conv.path == "/bears"
@@ -27,12 +26,15 @@ defmodule ParserTest do
   test "parse_headers" do
     header_lines = ["Host: localhost:4000", "Content-Type: application/x-www-form-urlencoded"]
     headers = Parser.parse_headers(header_lines, %{})
-    assert headers == %{"Host" => "localhost:4000", "Content-Type" => "application/x-www-form-urlencoded"}
+
+    assert headers == %{
+             "Host" => "localhost:4000",
+             "Content-Type" => "application/x-www-form-urlencoded"
+           }
   end
 
   test "parse_headers with empty headers" do
     headers = Parser.parse_headers([], %{})
     assert headers == %{}
   end
-
 end

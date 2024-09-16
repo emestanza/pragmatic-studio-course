@@ -21,6 +21,7 @@ defmodule Servy.Handler do
     # |> log
     |> track
     # |> emojify
+    |> put_content_length
     |> format_response
   end
 
@@ -77,10 +78,15 @@ defmodule Servy.Handler do
   def format_response(%Conv{path: _path} = conv) do
     """
     HTTP/1.1 #{Conv.full_status(conv)}
-    Content-Type: #{conv.resp_content_type}
-    Content-Length: #{byte_size(conv.resp_body)}
+    Content-Type: #{conv.resp_headers["Content-Type"]}
+    Content-Length: #{String.length(conv.resp_body)}
 
     #{conv.resp_body}
     """
+  end
+
+  def put_content_length(conv) do
+    headers = Map.put(conv.resp_headers, "Content-Length", String.length(conv.resp_body))
+    %{conv | resp_headers: headers}
   end
 end
