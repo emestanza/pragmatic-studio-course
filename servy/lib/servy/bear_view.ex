@@ -1,0 +1,18 @@
+defmodule Servy.BearView do
+  require EEx
+
+  @templates_path Path.expand("templates", __DIR__)
+
+  EEx.function_from_file :def, :index, Path.join(@templates_path, "index.eex"), [:bears]
+
+  EEx.function_from_file :def, :show, Path.join(@templates_path, "show.eex"), [:bear]
+
+  def render(conv, template, assigns) do
+    content =
+      @templates_path
+      |> Path.join(template)
+      |> EEx.eval_file(assigns)
+
+    %{conv | status: 200, resp_body: content}
+  end
+end
