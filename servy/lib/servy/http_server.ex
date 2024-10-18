@@ -32,7 +32,11 @@ defmodule Servy.HttpServer do
     IO.puts("⚡️  Connection accepted!\n")
 
     # Receives the request and sends a response over the client socket.
-    serve(client_socket)
+    # Creating an Elixir process requires the use of spawn/1 or spawn/3. The former accepts an anonymous function as its argument (as we’ve just seen),
+    # while the latter takes a Module, function name, and a list of arguments (MFA). In both cases,
+    # spawn returns the PID (Process ID) to the calling process.
+    # https://hexdocs.pm/elixir/processes.html
+    spawn(fn -> serve(client_socket) end)
 
     # Loop back to wait and accept the next connection.
     accept_loop(listen_socket)
@@ -43,6 +47,8 @@ defmodule Servy.HttpServer do
   sends a response back over the same socket.
   """
   def serve(client_socket) do
+    IO.puts("#{inspect(self())} is handling the connection.\n")
+
     client_socket
     |> read_request
     |> Servy.Handler.handle()
