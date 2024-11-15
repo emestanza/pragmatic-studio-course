@@ -3,19 +3,10 @@ defmodule Servy do
   Documentation for `Servy`.
   """
 
-  @doc """
-  Hello world.
+  use Application
 
-  ## Examples
-
-      iex> Servy.hello()
-      :world
-
-  """
-  def hello do
-    :world
+  def start(_start_type, _start_args) do
+    IO.puts("Starting the application")
+    Servy.Supervisor.start_link()
   end
 end
-
-
-IO.puts(Servy.hello())

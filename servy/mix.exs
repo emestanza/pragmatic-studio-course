@@ -14,7 +14,13 @@ defmodule Servy.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger, :eex]
+      extra_applications: [:logger, :eex],
+      mod: {Servy, []},
+      env: [
+        default_cache_size: 3,
+        refresh_interval: :timer.minutes(60),
+        port: 3000
+      ]
     ]
   end
 
